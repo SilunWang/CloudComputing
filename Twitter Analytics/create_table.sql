@@ -1,0 +1,54 @@
+CREATE USER 'newuser'@'localhost' IDENTIFIED BY 'password';
+GRANT ALL PRIVILEGES ON * . * TO 'newuser'@'localhost';
+FLUSH PRIVILEGES;
+
+CREATE DATABASE db15619;
+USE db15619;
+
+SET NAMES utf8mb4;
+DROP TABLE IF EXISTS `tweetsq4`;
+CREATE TABLE `tweetsq4` (
+  `tag` VARCHAR(2048) NOT NULL ,
+  `date` DATE NOT NULL,
+  `count` INT NOT NULL,
+  `users` LONGTEXT NOT NULL,
+  `tweet_id` BIGINT NOT NULL,
+  `text` TEXT NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
+
+ALTER TABLE tweetsq4 charset=utf8mb4, MODIFY COLUMN tag VARCHAR(2048) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;
+
+LOAD DATA LOCAL INFILE 'q4sql'
+INTO TABLE db15619.tweetsq4
+CHARACTER SET utf8mb4 
+FIELDS TERMINATED BY '\t';
+
+DROP TABLE IF EXISTS `q4`;
+create table q4 as(
+    select * from tweetsq4
+    order by count desc, date asc
+);
+
+ALTER TABLE q4 ADD INDEX IDX_TAG(tag) using HASH;
+
+
+CREATE TABLE `q2` (
+  `uidtime` CHAR(36) NOT NULL,
+  `text` TEXT NOT NULL,
+  `tweet_id` BIGINT NOT NULL,
+  `score` int NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
+
+ALTER TABLE q2 ADD INDEX IDX_UID(uidtime) USING HASH;
+
+CREATE TABLE `q3` (
+  `user_id` BIGINT NOT NULL,
+  `content` LONGTEXT NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
+
+LOAD DATA LOCAL INFILE 'q3sql'
+INTO TABLE db15619.q3
+CHARACTER SET utf8mb4 
+FIELDS TERMINATED BY '\t';
+
+ALTER TABLE q3 ADD INDEX IDX_UID(user_id) using HASH;

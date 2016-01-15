@@ -1,0 +1,3 @@
+-- Write down the SQL statements you wrote to createing optimized tables
+-- and to populate those tables in this file.
+-- Remember to add comments explaining why you did so.
